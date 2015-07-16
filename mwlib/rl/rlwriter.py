@@ -77,7 +77,7 @@ from mwlib.writer import miscutils, styleutils
 import rltables
 from pagetemplates import WikiPage, TitlePage
 
-from mwlib import parser, log, uparser,  timeline
+from mwlib import parser, log, uparser, timeline, uml
 from mwlib.writer.licensechecker import LicenseChecker
 from mwlib.rl import fontconfig
 from mwlib.rl.customnodetransformer import CustomNodeTransformer
@@ -2197,6 +2197,18 @@ class RlWriter(object):
             node.width = 180
             node.thumb = True
             node.isInline = lambda : False
+            w, h = self.image_utils.getImageSize(node, img_path)
+            return [Figure(img_path, '', text_style(), imgWidth=w, imgHeight=h)]
+        return []
+
+    def writeUml(self, node):
+        img_path = uml.drawUml(node.uml, self.tmpdir)
+
+        if img_path:
+            # width and height should be parsed by the....parser and not guessed by the writer
+            node.width = 540
+            node.thumb = False
+            node.isInline = lambda: False
             w, h = self.image_utils.getImageSize(node, img_path)
             return [Figure(img_path, '', text_style(), imgWidth=w, imgHeight=h)]
         return []
