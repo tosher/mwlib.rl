@@ -23,6 +23,9 @@ try:
 except ImportError:
     from md5 import md5
 
+from fontawesome import FontAwesome
+font_awesome = FontAwesome()
+
 from xml.sax.saxutils import escape as xmlescape
 from PIL import Image as PilImage
 
@@ -1052,7 +1055,7 @@ class RlWriter(object):
                 break
         return [pre]
 
-    def writeNode(self,obj):
+    def writeNode(self, obj):
         return self.renderMixed(obj)
 
     def renderText(self, txt, **kwargs):
@@ -1062,6 +1065,11 @@ class RlWriter(object):
         return [self.renderText(obj.caption)]
 
     def renderInline(self, node):
+        # fontawesome icons
+        txt = font_awesome.renderFontawesomeIcon(node)
+        if txt:
+            return txt
+
         txt = []
         self.inline_mode += 1
         for child in node.children:

@@ -28,6 +28,11 @@ fonts = [
      'xl_scripts': ['Latin', 'Cyrillic', 'Greek', 'Coptic', 'Hebrew'],
      'file_names': ['freefont/FreeSerif.ttf', 'freefont/FreeSerifBold.ttf', 'freefont/FreeSerifItalic.ttf', 'freefont/FreeSerifBoldItalic.ttf'],
      },
+    {
+        'name': 'FontAwesome',  # FontAwesome TrueType font
+        'xl_scripts': [],
+        'file_names': ['fontawesome-webfont.ttf'],
+    },
     {'name': 'FreeSans',
      'code_points': ['IPA Extensions', 'Spacing Modifier Letters', 'Combining Diacritical Marks', 'Armenian', 'NKo', 'Lao', 'Georgian', 'Unified Canadian Aboriginal Syllabics', 'Ogham', 'Phonetic Extensions', 'Phonetic Extensions Supplement', 'Combining Diacritical Marks Supplement', 'General Punctuation', 'Superscripts and Subscripts', 'Currency Symbols', 'Combining Diacritical Marks for Symbols', 'Letterlike Symbols', 'Number Forms', 'Arrows', 'Mathematical Operators', 'Miscellaneous Technical', 'Control Pictures', 'Enclosed Alphanumerics', 'Block Elements', 'Dingbats', 'Miscellaneous Mathematical Symbols-A', 'Supplemental Arrows-A', 'Braille Patterns', 'Miscellaneous Mathematical Symbols-B', 'Supplemental Mathematical Operators', 'Miscellaneous Symbols and Arrows', 'Latin Extended-C', 'Tifinagh', 'Supplemental Punctuation', 'Yijing Hexagram Symbols', 'Modifier Tone Letters', 'Latin Extended-D', 'Variation Selectors', 'Combining Half Marks', 'Specials', 'Tai Xuan Jing Symbols', 'Mathematical Alphanumeric Symbols', 'Syriac'] ,
      'file_names': ['freefont/FreeSans.ttf', 'freefont/FreeSansBold.ttf', 'freefont/FreeSansOblique.ttf', 'freefont/FreeSansBoldOblique.ttf'],
