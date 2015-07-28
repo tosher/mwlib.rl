@@ -604,9 +604,10 @@ class FontAwesome(object):
     # TODO: normal sizes
     fa_sizes = {
         'fa-2x': 16,
-        'fa-3x': 20,
-        'fa-4x': 24,
-        'fa-lg': 30}
+        'fa-3x': 24,
+        'fa-4x': 32,
+        'fa-5x': 40,
+        'fa-lg': 12}
 
     def __init__(self):
         self.html_parser = HTMLParser.HTMLParser()
