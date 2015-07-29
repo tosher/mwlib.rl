@@ -1667,7 +1667,7 @@ class RlWriter(object):
 
 
     def _writeSourceInSourceMode(self, n, src_lang, lexer, font_size):
-        sourceFormatter = ReportlabFormatter(font_size=font_size, font_name='FreeMono', background_color='#eeeeee', line_numbers=False)
+        sourceFormatter = ReportlabFormatter(font_size=font_size, font_name=pdfstyles.mono_font, background_color='#eeeeee', line_numbers=False)
         sourceFormatter.encoding = 'utf-8'
         self.formatter.source_mode += 1
 
