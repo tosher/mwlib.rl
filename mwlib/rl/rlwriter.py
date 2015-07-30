@@ -1665,9 +1665,17 @@ class RlWriter(object):
                    broken_source.append(''.join(new_line))
        return '\n'.join(broken_source)
 
+    def _writeSourceInSourceMode(self, n, src_lang, lexer, font_size, bgcolor=None, style=None):
+        if bgcolor is None:
+            bgcolor = pdfstyles.source_bgcolor
+        if style is None:
+            style = pdfstyles.source_style
 
-    def _writeSourceInSourceMode(self, n, src_lang, lexer, font_size):
-        sourceFormatter = ReportlabFormatter(font_size=font_size, font_name=pdfstyles.mono_font, background_color='#eeeeee', line_numbers=False)
+        sourceFormatter = ReportlabFormatter(
+            font_size=font_size, font_name=pdfstyles.mono_font,
+            background_color=bgcolor, line_numbers=pdfstyles.source_line_numbers,
+            style=style)
+
         sourceFormatter.encoding = 'utf-8'
         self.formatter.source_mode += 1
 
@@ -1708,6 +1716,12 @@ class RlWriter(object):
                     log.error('unknown source code language: %s' % repr(name))
                     return None
         src_lang = n.vlist.get('lang', '').lower()
+        # small hack for get style from html tag
+        # <source lang="python" data-pdfbgcolor="#141414" data-pdfstyle="monokai">
+        # data- will be cutted in vlist..
+        src_bgcolor = n.vlist.get('pdfbgcolor', None)
+        src_style = n.vlist.get('pdfstyle', None)
+
         lexer = getLexer(src_lang)
         if lexer:
             rtl, self.rtl = self.rtl, False
@@ -1715,7 +1729,7 @@ class RlWriter(object):
             avail_width = self.getAvailWidth()
             font_size = pdfstyles.font_size
             while not width or width > avail_width:
-                res = self._writeSourceInSourceMode(n, src_lang, lexer, font_size)
+                res = self._writeSourceInSourceMode(n, src_lang, lexer, font_size, src_bgcolor, src_style)
                 if res.__class__ != XPreformatted:
                     break
                 width, height = res.wrap(avail_width, pdfstyles.page_height)

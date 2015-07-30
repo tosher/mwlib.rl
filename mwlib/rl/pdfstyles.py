@@ -177,6 +177,13 @@ url_blacklist = ['http://toolserver.org']
 url_ref_in_table = True
 url_ref_len = 30
 
+# source styles
+source_line_numbers = False
+# default,autumn,orland,bw,colorful,default,emacs,friendly,fruity,manni,monokai,murphy,native,pastie,perldoc,rrt,tango,trac,vim,vs
+source_bgcolor = '#eeeeee'
+source_style = 'default'
+
+
 class BaseStyle(ParagraphStyle):
 
     def __init__(self, name, parent=None, **kw):
