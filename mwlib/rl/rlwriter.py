@@ -30,7 +30,7 @@ from xml.sax.saxutils import escape as xmlescape
 from PIL import Image as PilImage
 
 from pygments import highlight
-from pygments  import lexers
+from pygments import lexers
 from rlsourceformatter import ReportlabFormatter
 
 try:
@@ -90,7 +90,7 @@ log = log.Log('rlwriter')
 
 from mwlib.rl.toc import TocRenderer
 from mwlib.rl._version import version as rlwriterversion
-from mwlib._version import version as  mwlibversion
+from mwlib._version import version as mwlibversion
 try:
     from mwlib import _extversion
 except ImportError:
@@ -124,8 +124,7 @@ def buildPara(txtList, style=text_style(), txt_style=None):
         _txt = '%(start)s%(txt)s%(end)s' % {
             'start': ''.join(txt_style['start']),
             'end': ''.join(txt_style['end']),
-            'txt': _txt,
-            }
+            'txt': _txt}
     if len(_txt) > 0:
         try:
             return [Paragraph(_txt, style)]
@@ -157,7 +156,6 @@ class RlWriter(object):
             except IOError, exc:
                 log.warn(str(exc))
         translation.install(unicode=True)
-
 
         self.font_switcher = fontconfig.RLFontSwitcher()
 
@@ -261,7 +259,6 @@ class RlWriter(object):
         self.url_map = {}
         self.fixed_images = {}
 
-
     def ignore(self, obj):
         return []
 
@@ -292,7 +289,7 @@ class RlWriter(object):
                     except:
                         h = 0
                     groupHeight += h
-                    if groupHeight > print_height / 10 or isinstance(elements[0], NotAtTopPageBreak): # 10 % of page_height
+                    if groupHeight > print_height / 10 or isinstance(elements[0], NotAtTopPageBreak):  # 10 % of page_height
                         groupedElements.append(SmartKeepTogether(group))
                         group = []
                         groupHeight = 0
@@ -321,7 +318,7 @@ class RlWriter(object):
 
     def set_rtl(self, rtl):
         self.rtl = rtl
-        if rtl == True:
+        if rtl is True:
             pdfstyles.word_wrap = 'RTL'
         else:
             pdfstyles.word_wrap = self.word_wrap
@@ -351,7 +348,7 @@ class RlWriter(object):
             if self.strict:
                 raise writerbase.WriterError('Unkown Node: %s ' % obj.__class__.__name__)
             return []
-        m=getattr(self, m)
+        m = getattr(self, m)
         styles = self.formatter.setStyle(obj)
         original = self.check_direction(obj)
         res = m(obj)
@@ -386,12 +383,11 @@ class RlWriter(object):
 
     def buildArticle(self, item):
         mywiki = item.wiki
-        art = mywiki.getParsedArticle(title=item.title,
-                                             revision=item.revision)
+        art = mywiki.getParsedArticle(title=item.title, revision=item.revision)
         if not art:
-            return # FIXME
+            return  # FIXME
         try:
-            ns = item.wiki.normalize_and_get_page(item.title,0).ns
+            ns = item.wiki.normalize_and_get_page(item.title, 0).ns
         except AttributeError:
             ns = 0
         art.ns = ns
@@ -416,7 +412,6 @@ class RlWriter(object):
             print "\n".join([repr(r) for r in self.tc.getReports()])
         return art
 
-
     def initReportlabDoc(self, output):
         version = self.getVersion()
         if pdfstyles.render_toc:
@@ -431,9 +426,7 @@ class RlWriter(object):
                                  title=self.book.title,
                                  keywords=version,
                                  status_callback=self.render_status,
-                                 tocCallback=tocCallback,
-        )
-
+                                 tocCallback=tocCallback,)
 
     def articleRenderingOK(self, node, output):
         testdoc = BaseDocTemplate(output,
@@ -451,7 +444,7 @@ class RlWriter(object):
             self.doc = doc_bak
             return True
         except:
-            log.error('article failed:' , repr(node.caption))
+            log.error('article failed:', repr(node.caption))
             tr = traceback.format_exc()
             log.error(tr)
             self.doc = doc_bak
@@ -461,7 +454,6 @@ class RlWriter(object):
         pt = WikiPage('')
         self.doc.addPageTemplates(pt)
         return Paragraph(' ', text_style())
-
 
     def writeBook(self, output, coverimage=None, status_callback=None):
         self.numarticles = len(self.env.metabook.articles())
@@ -532,7 +524,6 @@ class RlWriter(object):
                 self.fail_safe_rendering = True
                 self.writeBook(output, coverimage=coverimage, status_callback=status_callback)
 
-
     def renderBook(self, elements, output, coverimage=None):
         if pdfstyles.show_article_attribution:
             elements.append(TocEntry(txt=_('References'), lvl='group'))
@@ -595,9 +586,8 @@ class RlWriter(object):
         self.license_mode = False
         return elements
 
-
     def getArticleIDs(self):
-        self.articleids=[]
+        self.articleids = []
         for item in self.env.metabook.walk():
             if item.type != 'article':
                 continue
@@ -614,17 +604,16 @@ class RlWriter(object):
     def tocCallback(self, info):
         self.toc_entries.append(info)
 
-
     def writeTitlePage(self, coverimage=None):
         # FIXME: clean this up. there seems to be quite a bit of deprecated here
         title = self.book.title
-        subtitle =  self.book.subtitle
+        subtitle = self.book.subtitle
 
         if not title:
             return []
         first_article_title = None
         for item in self.book.walk():
-            if item.type == 'chapter': # dont set page header if pdf starts with a chapter
+            if item.type == 'chapter':  # dont set page header if pdf starts with a chapter
                 break
             if item.type == 'article':
                 first_article_title = self.renderArticleTitle(item.displaytitle or item.title)
@@ -642,16 +631,20 @@ class RlWriter(object):
         return elements
 
     def _getPageTemplate(self, title):
-        template_title =self.renderArticleTitle(title)
+        template_title = self.renderArticleTitle(title)
         page_template = WikiPage(template_title, rtl=self.rtl)
         self.doc.addPageTemplates(page_template)
         return NextPageTemplate(template_title.encode('utf-8'))
 
     def writeChapter(self, chapter):
-        hr = HRFlowable(width="80%", spaceBefore=6, spaceAfter=0, color=pdfstyles.chapter_rule_color, thickness=0.5)
-
+        '''
+        chapters like:
+        ------------------ <= chapter_rule_before
+            Chapter
+        ------------------ <= chapter_rule_after
+        '''
         title = self.renderArticleTitle(chapter.caption)
-        if self.inline_mode == 0 and self.table_nesting==0:
+        if self.inline_mode == 0 and self.table_nesting == 0:
             chapter_anchor = '<a name="%s" />' % len(self.bookmarks)
             self.bookmarks.append((title, 'chapter'))
         else:
@@ -660,11 +653,17 @@ class RlWriter(object):
         elements = []
 
         elements.append(self._getPageTemplate(''))
-        elements.extend([NotAtTopPageBreak(), hr, chapter_para, hr])
+        elements.append(NotAtTopPageBreak())
+        if pdfstyles.chapter_rule_before:
+            chapter_rule_before = HRFlowable(width="80%", spaceBefore=6, spaceAfter=0, color=pdfstyles.chapter_rule_before_color, thickness=0.5)
+            elements.append(chapter_rule_before)
+        elements.append(chapter_para)
+        if pdfstyles.chapter_rule_after:
+            chapter_rule_after = HRFlowable(width="80%", spaceBefore=6, spaceAfter=0, color=pdfstyles.chapter_rule_after_color, thickness=0.5)
+            elements.append(chapter_rule_after)
         elements.append(TocEntry(txt=title, lvl='chapter'))
         elements.append(self._getPageTemplate(chapter.next_article_title))
         elements.extend(self.renderChildren(chapter))
-
 
         return elements
 
@@ -683,9 +682,9 @@ class RlWriter(object):
             heading_txt = ''
         self.formatter.sectiontitle_mode = False
 
-        if 1 <= lvl <= 4 and self.inline_mode == 0 and self.table_nesting==0:
+        if 1 <= lvl <= 4 and self.inline_mode == 0 and self.table_nesting == 0:
             anchor = '<a name="%d"/>' % len(self.bookmarks)
-            bm_type = 'article' if lvl==1 else 'heading%s' % lvl
+            bm_type = 'article' if lvl == 1 else 'heading%s' % lvl
             self.bookmarks.append((obj.children[0].getAllDisplayText(), bm_type))
         else:
             anchor = ''
@@ -701,17 +700,17 @@ class RlWriter(object):
         txt = node.getAllDisplayText()
         txt = xmlescape(txt)
         elements = []
-        elements.extend([Spacer(0, 1*cm), HRFlowable(width="100%", thickness=2), Spacer(0,0.5*cm)])
+        elements.extend([Spacer(0, 1*cm), HRFlowable(width="100%", thickness=2), Spacer(0, 0.5*cm)])
         elements.append(Paragraph(infoText, text_style(in_table=False)))
-        elements.append(Spacer(0,0.5*cm))
+        elements.append(Spacer(0, 0.5*cm))
         elements.append(Paragraph(txt, text_style(in_table=False)))
-        elements.extend([Spacer(0, 0.5*cm), HRFlowable(width="100%", thickness=2), Spacer(0,1*cm)])
+        elements.extend([Spacer(0, 0.5*cm), HRFlowable(width="100%", thickness=2), Spacer(0, 1*cm)])
         return elements
 
     def buildArticleID(self, wikiurl, article_name):
         tmplink = advtree.Link()
         tmplink.target = article_name
-        tmplink.capitalizeTarget = True # this is a hack, this info should pulled out of the environment if available
+        tmplink.capitalizeTarget = True  # this is a hack, this info should pulled out of the environment if available
         #tmplink._normalizeTarget() # FIXME: this is currently removed from mwlib. we need to check URL handling in mwlib
         idstr = '%s%s' % (wikiurl, tmplink.target)
         m = md5(idstr.encode('utf-8'))
@@ -738,8 +737,8 @@ class RlWriter(object):
                 'source_label': self.formatter.cleanText(_('Source')),
                 'source': self.formatter.cleanText(url),
                 'contribs_label': self.formatter.cleanText(_('Contributors')),
-                'contribs': authors_text,
-                }
+                'contribs': authors_text}
+
             elements.append(Paragraph(txt, text_style('attribution')))
         return elements
 
@@ -756,16 +755,16 @@ class RlWriter(object):
                 license = _('unknown')
             license_txt = '<i>%(license_label)s</i>: %(license)s &nbsp;' % {
                 'license_label': self.formatter.cleanText(_('License')),
-                'license': self.formatter.cleanText(license),
-                }
+                'license': self.formatter.cleanText(license)}
+
             txt = '<b>%(title)s</b> &nbsp;<i>%(source_label)s</i>: %(source)s &nbsp;%(license_txt)s<i>%(contribs_label)s</i>: %(contribs)s ' % {
                 'title': self.formatter.cleanText(title),
                 'source_label': self.formatter.cleanText(_('Source')),
                 'source': self.formatter.cleanText(url),
                 'license_txt': license_txt,
                 'contribs_label': self.formatter.cleanText(_('Contributors')),
-                'contribs': authors_text,
-                }
+                'contribs': authors_text}
+
             elements.append(Paragraph(txt, text_style('img_attribution')))
         return elements
 
@@ -802,22 +801,21 @@ class RlWriter(object):
             self.layout_status(article=article.caption)
             self.articlecount += 1
         elements = []
-        if hasattr(self, 'doc'): # doc is not present if tests are run
+        if hasattr(self, 'doc'):  # doc is not present if tests are run
             elements.append(self._getPageTemplate(title))
             # FIXME remove the getPrevious below
             if self.license_mode:
                 if self.numarticles > 1:
                     elements.append(NotAtTopPageBreak())
-            elif not getattr(article, 'has_preceeding_chapter', False) \
-                   or isinstance(article.getPrevious(), advtree.Article):
-                if pdfstyles.page_break_after_article: # if configured and preceded by an article
+            elif not getattr(article, 'has_preceeding_chapter', False) or isinstance(article.getPrevious(), advtree.Article):
+                if pdfstyles.page_break_after_article:  # if configured and preceded by an article
                     elements.append(NotAtTopPageBreak())
                 elif miscutils.articleStartsWithInfobox(article, max_text_until_infobox=100):
                     elements.append(CondPageBreak(pdfstyles.article_start_min_space_infobox))
                 else:
                     elements.append(CondPageBreak(pdfstyles.article_start_min_space))
 
-        if self.inline_mode == 0 and self.table_nesting==0:
+        if self.inline_mode == 0 and self.table_nesting == 0:
             heading_anchor = '<a name="%d"/>' % len(self.bookmarks)
             self.bookmarks.append((article.caption, 'article'))
         else:
@@ -838,22 +836,21 @@ class RlWriter(object):
         if pdfstyles.show_article_hr:
             elements.append(HRFlowable(width='100%', hAlign='LEFT', thickness=1, spaceBefore=0, spaceAfter=10, color=colors.black))
         else:
-            elements.append(Spacer(0,10))
+            elements.append(Spacer(0, 10))
 
-        if not hasattr(article, 'renderFailed'): # if rendering of the whole book failed, failed articles are flagged
+        if not hasattr(article, 'renderFailed'):  # if rendering of the whole book failed, failed articles are flagged
             elements.extend(self.renderMixed(article))
         else:
             articleFailText = _('<strong>WARNING: Article could not be rendered - outputting plain text.</strong><br/>Potential causes of the problem are: (a) a bug in the pdf-writer software (b) problematic Mediawiki markup (c) table is too wide')
             elements.extend(self.renderFailedNode(article, articleFailText))
 
         # check for non-flowables
-        elements = [e for e in elements if not isinstance(e,basestring)]
+        elements = [e for e in elements if not isinstance(e, basestring)]
         elements = self.floatImages(elements)
         elements = self.tabularizeImages(elements)
 
         if self.references:
-            ref_elements = [Paragraph(
-                    '<b>' + _('References') + '</b>', heading_style('section', lvl=3))]
+            ref_elements = [Paragraph('<b>' + _('References') + '</b>', heading_style('section', lvl=3))]
             ref_elements.extend(self.writeReferenceList())
             if isinstance(elements[-1], CondPageBreak):
                 elements[-1:-1] = ref_elements
@@ -872,7 +869,7 @@ class RlWriter(object):
         self.reference_list_rendered = False
         return elements
 
-    def writeParagraph(self,obj):
+    def writeParagraph(self, obj):
         first_leaf = obj.getFirstLeaf()
         if hasattr(first_leaf, 'caption'):
             first_leaf.caption = first_leaf.caption.lstrip()
@@ -892,9 +889,9 @@ class RlWriter(object):
         """
 
         def getMargins(align):
-            if align=='right':
+            if align == 'right':
                 return pdfstyles.img_margins_float_right
-            elif align=='left':
+            elif align == 'left':
                 return pdfstyles.img_margins_float_left
             return pdfstyles.img_margins_float
 
@@ -912,8 +909,8 @@ class RlWriter(object):
                 hf += f.imgHeight + f.margin[0] + f.margin[2] + f.padding[0] + f.padding[2] + f.cs.leading * max(int(len(f.captionTxt) / 40), 1)
                 maxImgWidth = max(maxImgWidth, f.imgWidth)
             for p in paras:
-                if isinstance(p,Paragraph):
-                    w,h = p.wrap(print_width - maxImgWidth, print_height)
+                if isinstance(p, Paragraph):
+                    w, h = p.wrap(print_width - maxImgWidth, print_height)
                     h += p.style.spaceBefore + p.style.spaceAfter
                     hp += h
             if hp > hf - 10:
@@ -921,7 +918,7 @@ class RlWriter(object):
             else:
                 return False
 
-        for n in nodes: # FIXME: somebody should clean up this mess
+        for n in nodes:  # FIXME: somebody should clean up this mess
             if isinstance(lastNode, Figure) and isinstance(n, Figure):
                 if getattr(n, 'float_figure', False):
                     figures.append(n)
@@ -929,23 +926,23 @@ class RlWriter(object):
                     combinedNodes.extend(figures)
                     combinedNodes.extend([Spacer(0, 0.5*cm), n])
                     figures = []
-            else :
+            else:
                 if not figures:
                     if getattr(n, 'float_figure', False):
                         figures.append(n)
                     else:
                         combinedNodes.append(n)
                 else:
-                    if (hasattr(n, 'style') and n.style.flowable == True  and not gotSufficientFloats(figures, floatingNodes)): #newpara
+                    if (hasattr(n, 'style') and n.style.flowable is True and not gotSufficientFloats(figures, floatingNodes)):  # newpara
                         floatingNodes.append(n)
                     else:
                         if len(floatingNodes) > 0:
-                            if hasattr(floatingNodes[-1], 'style') and floatingNodes[-1].style.name.startswith('heading_style') and floatingNodes[-1].style.flowable==True: # prevent floating headings before nonFloatables
+                            if hasattr(floatingNodes[-1], 'style') and floatingNodes[-1].style.name.startswith('heading_style') and floatingNodes[-1].style.flowable is True:  # prevent floating headings before nonFloatables
                                 noFloatNode = floatingNodes[-1]
                                 floatingNodes = floatingNodes[:-1]
                             else:
                                 noFloatNode = None
-                            if len(floatingNodes)==0:
+                            if len(floatingNodes) == 0:
                                 combinedNodes.extend(figures)
                                 figures = []
                                 combinedNodes.append(noFloatNode)
@@ -953,10 +950,10 @@ class RlWriter(object):
                                     figures.append(n)
                                 else:
                                     combinedNodes.append(n)
-                                lastNode=n
+                                lastNode = n
                                 continue
                             fm = getMargins(figures[0].align or 'right')
-                            combinedNodes.append(FiguresAndParagraphs(figures,floatingNodes, figure_margin=fm, rtl=self.rtl ))
+                            combinedNodes.append(FiguresAndParagraphs(figures, floatingNodes, figure_margin=fm, rtl=self.rtl))
                             if noFloatNode:
                                 combinedNodes.append(noFloatNode)
                             figures = []
@@ -973,7 +970,7 @@ class RlWriter(object):
 
         if figures and floatingNodes:
             fm = getMargins(figures[0].align or 'right')
-            combinedNodes.append(FiguresAndParagraphs(figures,floatingNodes, figure_margin=fm, rtl=self.rtl ))
+            combinedNodes.append(FiguresAndParagraphs(figures, floatingNodes, figure_margin=fm, rtl=self.rtl))
         else:
             combinedNodes.extend(figures + floatingNodes)
 
@@ -1000,14 +997,14 @@ class RlWriter(object):
             return scaled_images
 
         for n in nodes:
-            if isinstance(n,Figure):
+            if isinstance(n, Figure):
                 figures.append(n)
             else:
-                if len(figures)>1:
+                if len(figures) > 1:
                     figures = scaleImages(figures)
-                    data = [  [figures[2*i],figures[2*i+1]]  for i in range(int(len(figures)/2))]
+                    data = [[figures[2 * i], figures[2 * i + 1]] for i in range(int(len(figures) / 2))]
                     if len(figures) % 2 != 0:
-                        data.append( [figures[-1],''] )
+                        data.append([figures[-1], ''])
                     table = Table(data)
                     finalNodes.append(table)
                     figures = []
@@ -1016,11 +1013,11 @@ class RlWriter(object):
                         finalNodes.append(figures[0])
                         figures = []
                     finalNodes.append(n)
-        if len(figures)>1:
+        if len(figures) > 1:
             figures = scaleImages(figures)
-            data = [  [figures[2*i],figures[2*i+1]]  for i in range(int(len(figures)/2))]
+            data = [[figures[2 * i], figures[2 * i + 1]] for i in range(int(len(figures) / 2))]
             if len(figures) % 2 != 0:
-                data.append( [figures[-1],''] )
+                data.append([figures[-1], ''])
             table = Table(data)
             finalNodes.append(table)
         else:
@@ -1033,12 +1030,11 @@ class RlWriter(object):
         txt = self.renderInline(obj)
         self.rtl = rtl
         t = ''.join(txt)
-        t = re.sub( u'<br */>', u'\n', t)
+        t = re.sub(u'<br */>', u'\n', t)
         t = t.replace('\t', ' '*pdfstyles.tabsize)
         self.formatter.pre_mode = False
         if not len(t):
             return []
-
 
         avail_width = self.getAvailWidth()
         width = None
@@ -1093,7 +1089,7 @@ class RlWriter(object):
             if self.license_mode:
                 para_style = text_style("license")
             else:
-                para_style = text_style(indent_lvl=self.paraIndentLevel,in_table=self.table_nesting)
+                para_style = text_style(indent_lvl=self.paraIndentLevel, in_table=self.table_nesting)
         elif self.license_mode:
             para_style.fontSize = max(text_style('license').fontSize, para_style.fontSize - 4)
             para_style.leading = 1
@@ -1109,7 +1105,7 @@ class RlWriter(object):
             txt.append(textPrefix)
         items = []
 
-        if isinstance(node, advtree.Node): #set node styles like text/bg colors, alignment
+        if isinstance(node, advtree.Node):  # set node styles like text/bg colors, alignment
             text_color = styleutils.rgbColorFromNode(node)
             background_color = styleutils.rgbBgColorFromNode(node)
             if text_color:
@@ -1120,15 +1116,15 @@ class RlWriter(object):
             if align in ['right', 'center', 'justify']:
                 align_map = {'right': TA_RIGHT,
                              'center': TA_CENTER,
-                             'justify': TA_JUSTIFY,}
+                             'justify': TA_JUSTIFY}
                 para_style.alignment = align_map[align]
 
         txt_style = None
         if node.__class__ == advtree.Cell and getattr(node, 'is_header', False):
-            txt_style = { # check nesting: start: <a>,<b> --> end: </b></a>
+            txt_style = {  # check nesting: start: <a>,<b> --> end: </b></a>
                 'start': ['<b>'],
-                'end': ['</b>'],
-                }
+                'end': ['</b>']}
+
         for c in node:
             res = self.write(c)
             if isInline(res):
@@ -1213,7 +1209,7 @@ class RlWriter(object):
         log.warning('unknown tag node', repr(s))
         return txt
 
-    def writeLink(self,obj):
+    def writeLink(self, obj):
         """ Link nodes are intra wiki links
         """
         href = obj.url
@@ -1247,7 +1243,7 @@ class RlWriter(object):
             t = self.formatter.styleText(txt)
 
         if not internallink:
-            if not obj.target.startswith('#'): # intrapage links are filtered
+            if not obj.target.startswith('#'):  # intrapage links are filtered
                 t = '<link href="%s">%s</link>' % (xmlescape(href), t)
         else:
             t = u'<link href="#%s">%s</link>' % (article_id, t)
@@ -1264,78 +1260,108 @@ class RlWriter(object):
     writeInterwikiLink = writeLink
     writeSpecialLink = writeLink
 
+    def _quote_url(self, url):
+        # to quote links with language specific chars
+        PROTO_DELIM = '://'
+        proto, url_txt = url.split(PROTO_DELIM)
+        return '%s%s%s' % (proto, PROTO_DELIM, urllib.quote(url_txt.encode('utf-8'), safe='/?&=#+:'))
+
     def renderURL(self, url):
         url = xmlescape(url)
+
         if self.rtl:
             return url
         zws = '<font fontSize="1"> </font>'
-        url = url.replace("/",u'/%s' % zws).replace('&amp;', u'&amp;%s' % zws).replace('.','.%s' % zws).replace('+', '+%s' % zws)
+        url = url.replace("/", u'/%s' % zws).replace('&amp;', u'&amp;%s' % zws).replace('.', '.%s' % zws).replace('+', '+%s' % zws)
         return url
 
     def writeURL(self, obj):
         href = obj.caption
         if href is not None:
-            quote_idx = href.find('"')
-            if quote_idx > -1:
+            if '"' in href:
+                quote_idx = href.find('"')
                 href = href[:quote_idx]
-        display_text = self.renderURL(href)
-        href = xmlescape(href)
-        if (self.table_nesting and len(href) > pdfstyles.url_ref_len and pdfstyles.url_ref_in_table) \
-               and not self.ref_mode:
+
+        # long links to short
+        if len(href) > 60:
+            href_short = ''.join([href[0:40], '..', href[-5:]])
+            display_text = self.renderURL(href_short)
+        else:
+            display_text = self.renderURL(href)
+
+        href = xmlescape(self._quote_url(href))
+
+        if pdfstyles.show_url_like_web:
+            if any([href.startswith(url) for url in pdfstyles.url_blacklist]):
+                return []
+            txt = '<link href="%s"><font color="#337AB7">%s</font></link>' % (href, display_text)
+            return [txt]
+
+        elif (self.table_nesting and len(href) > pdfstyles.url_ref_len and pdfstyles.url_ref_in_table
+                and not self.ref_mode):
             return self.writeNamedURL(obj)
+
         if self.rtl:
             txt = u'<link href="%s">\u202a%s\u202c</link>' % (href, display_text)
         else:
             txt = '<link href="%s">%s</link>' % (href, display_text)
         return [txt]
 
-    def writeNamedURL(self,obj):
+    def writeNamedURL(self, obj):
         href = obj.caption.strip()
         if href.startswith('//'):
             href = 'http:' + href
-        if not self.ref_mode and not self.reference_list_rendered:
+
+        href_safe = xmlescape(self._quote_url(href))
+
+        if pdfstyles.show_url_like_web:
+            txt = self.renderInline(obj)
+            if any([href.startswith(url) for url in pdfstyles.url_blacklist]):
+                return [''.join(txt)]
+            txt = '<link href="%s"><font color="#337AB7">%s</font></link>' % (href_safe, ''.join(txt))
+            return [txt]
+
+        elif not self.ref_mode and not self.reference_list_rendered:
             if not self.url_map.get(href):
                 i = parser.Item()
                 i.children = [advtree.URL(href)]
                 self.references.append(i)
                 self.url_map[href] = len(self.references)
-        else: # we are writing a reference section. we therefore directly print URLs
+        else:  # we are writing a reference section. we therefore directly print URLs
             txt = self.renderInline(obj)
             if any([href.startswith(url) for url in pdfstyles.url_blacklist]):
                 return [''.join(txt)]
-            txt.append(' <link href="%s">(%s)</link>' % (xmlescape(href), self.renderURL(urllib.unquote(href))))
+            txt.append(' <link href="%s">(%s)</link>' % (href_safe, self.renderURL(urllib.unquote(href))))
             return [''.join(txt)]
 
         if not obj.children:
-            linktext = '<link href="%s">[%s]</link>' % (xmlescape(href), self.url_map[href])
+            linktext = '<link href="%s">[%s]</link>' % (href_safe, self.url_map[href])
         else:
             linktext = self.renderInline(obj)
-            linktext.append(' <super><link href="%s"><font size="10">[%s]</font></link></super> ' % (xmlescape(href), self.url_map[href]))
+            linktext.append(' <super><link href="%s"><font size="10">[%s]</font></link></super> ' % (href_safe, self.url_map[href]))
             linktext = ''.join(linktext).strip()
         return linktext
 
-
     def writeCategoryLink(self, obj):
         txt = []
-        if obj.colon: # CategoryLink inside the article
+        if obj.colon:  # CategoryLink inside the article
             if obj.children:
                 txt.extend(self.renderInline(obj))
             else:
                 txt.append(obj.target)
-        else: # category of the article which is suppressed
+        else:  # category of the article which is suppressed
             return []
         txt = ''.join(txt)
         if txt.find("|") > -1:
-            txt = txt[:txt.find("|")] # category links sometimes seem to have more than one element. throw them away except the first one
-        return [''.join(txt)] #FIXME use writelink to generate clickable-link
+            txt = txt[:txt.find("|")]  # category links sometimes seem to have more than one element. throw them away except the first one
+        return [''.join(txt)]  # FIXME use writelink to generate clickable-link
 
-
-    def svg2png(self, img_path ):
+    def svg2png(self, img_path):
         cmd = ["convert", img_path, "-flatten", "-coalesce",  "-strip", img_path+".png"]
         try:
             p = subprocess.Popen(cmd, shell=False)
             pid, status = os.waitpid(p.pid, 0)
-            if status != 0 :
+            if status != 0:
                 log.warning('img could not be converted. convert exited with non-zero return code:', repr(cmd))
                 return ''
             else:
@@ -1346,7 +1372,7 @@ class RlWriter(object):
 
     def getImgPath(self, target):
         if self.imgDB:
-            imgPath = self.imgDB.getDiskPath(target, size=800) # FIXME: width should be obsolete now
+            imgPath = self.imgDB.getDiskPath(target, size=800)  # FIXME: width should be obsolete now
             if imgPath and imgPath.lower().endswith('svg'):
                 imgPath = self.svg2png(imgPath)
             if imgPath:
@@ -1363,7 +1389,7 @@ class RlWriter(object):
     def _fixBrokenImages(self, img_node, img_path):
         if img_path in self.fixed_images:
             return self.fixed_images[img_path]
-        self.fixed_images[img_path]=-1
+        self.fixed_images[img_path] = -1
 
         try:
             img = PilImage.open(img_path)
@@ -1379,18 +1405,17 @@ class RlWriter(object):
             '-limit', 'memory', '32000000',
             '-limit', 'map', '64000000',
             '-limit', 'disk', '64000000',
-            '-limit', 'area', '64000000',
-            ]
+            '-limit', 'area', '64000000']
         if img.info.get('interlace', 0) == 1:
             cmds.append(base_cmd + [img_path, '-interlace', 'none', img_path])
-        if img.mode == 'P': # ticket 324
-            cmds.append(base_cmd + [img_path, img_path]) # we esentially do nothing...but this seems to fix the problems
-        if img.mode == 'LA': # ticket 429
+        if img.mode == 'P':  # ticket 324
+            cmds.append(base_cmd + [img_path, img_path])  # we esentially do nothing...but this seems to fix the problems
+        if img.mode == 'LA':  # ticket 429
             cleaned = PilImage.new('LA', img.size)
             new_data = []
             for pixel in img.getdata():
                 if pixel[1] == 0:
-                    new_data.append((255,0))
+                    new_data.append((255, 0))
                 else:
                     new_data.append(pixel)
             cleaned.putdata(new_data)
@@ -1418,11 +1443,11 @@ class RlWriter(object):
         try:
             del img
             img = PilImage.open(img_path)
-            d = img.load()
+            img.load()
         except:
             log.warning('image can not be opened by PIL: %r' % img_path)
             raise
-        self.fixed_images[img_path]=0
+        self.fixed_images[img_path] = 0
         return 0
 
     def set_svg_default_size(self, img_node):
@@ -1430,12 +1455,12 @@ class RlWriter(object):
         if image_info.get('url', '').endswith('.svg'):
             w = image_info.get('width')
             h = image_info.get('height')
-            if w and h and img_node.width == None and img_node.height == None and img_node.isInline():
+            if w and h and img_node.width is None and img_node.height is None and img_node.isInline():
                 img_node.width = w
                 img_node.height = h
 
     def writeImageLink(self, img_node):
-        if img_node.colon == True:
+        if img_node.colon is True:
             items = []
             for node in img_node.children:
                 items.extend(self.write(node))
@@ -1444,7 +1469,7 @@ class RlWriter(object):
         img_path = self.getImgPath(img_node.target)
 
         if not img_path:
-            if img_node.target == None:
+            if img_node.target is None:
                 img_node.target = ''
             log.warning('invalid image url (obj.target: %r)' % img_node.target)
             return []
@@ -1466,9 +1491,9 @@ class RlWriter(object):
                 max_width = print_width / len(cell[0].getAllSiblings()) - 10
         max_height = pdfstyles.img_max_thumb_height * pdfstyles.print_height
         if self.table_nesting > 0:
-            max_height = print_height/4 # fixme this needs to be read from config
+            max_height = print_height/4  # fixme this needs to be read from config
         if self.gallery_mode:
-            max_height = print_height/3 # same as above
+            max_height = print_height/3  # same as above
 
         self.set_svg_default_size(img_node)
 
@@ -1477,7 +1502,7 @@ class RlWriter(object):
         align = img_node.align
         if align in [None, 'none']:
             align = styleutils.getTextAlign(img_node)
-        if advtree.Center in [ p.__class__ for p in img_node.getParents()]:
+        if advtree.Center in [p.__class__ for p in img_node.getParents()]:
             align = 'center'
         txt = []
         if img_node.render_caption:
@@ -1491,7 +1516,7 @@ class RlWriter(object):
             url = None
 
         if url:
-            linkstart = '<link href="%s"> ' % (xmlescape(url)) # spaces are needed, otherwise link is not present. probably b/c of a inline image bug of reportlab
+            linkstart = '<link href="%s"> ' % (xmlescape(url))  # spaces are needed, otherwise link is not present. probably b/c of a inline image bug of reportlab
             linkend = ' </link>'
         else:
             linkstart = ''
@@ -1520,8 +1545,8 @@ class RlWriter(object):
                 'height': h,
                 'align': 'bottom',
                 'linkstart': linkstart,
-                'linkend': linkend,
-                }
+                'linkend': linkend}
+
             return [txt]
         captionTxt = ''.join(txt)
         figure = Figure(img_path,
@@ -1537,8 +1562,7 @@ class RlWriter(object):
         figure.float_figure = not img_node.align in ['center', 'none']
         return [figure]
 
-
-    def writeGallery(self,obj):
+    def writeGallery(self, obj):
         self.gallery_mode = True
         try:
             perrow = int(obj.attributes.get('perrow', ''))
@@ -1548,7 +1572,7 @@ class RlWriter(object):
         if num_images == 0:
             return []
         if not perrow:
-            perrow = min(4, num_images) # 4 is the default for the number of images per gallery row
+            perrow = min(4, num_images)  # 4 is the default for the number of images per gallery row
         else:
             perrow = min(6, perrow, num_images)
         perrow = max(1, perrow)
@@ -1560,14 +1584,14 @@ class RlWriter(object):
 
         for node in obj.children:
             if isinstance(node, advtree.ImageLink):
-                node.align='center' # this is a hack. otherwise writeImage thinks this is an inline image
+                node.align = 'center'  # this is a hack. otherwise writeImage thinks this is an inline image
                 res = self.write(node)
             else:
                 res = self.write(node)
                 try:
                     res = buildPara(res)
                 except:
-                    res = Paragraph('',text_style(in_table=self.table_nesting))
+                    res = Paragraph('', text_style(in_table=self.table_nesting))
             if len(row) < perrow:
                 row.append(res)
             else:
@@ -1598,7 +1622,7 @@ class RlWriter(object):
                     figure.i.drawHeight = row_heights[row_idx]
 
         table = Table(data, colWidths=colwidths)
-        table.setStyle([('VALIGN',(0,0),(-1,-1),'TOP')])
+        table.setStyle([('VALIGN', (0, 0), (-1, -1), 'TOP')])
         self.gallery_mode = False
         caption = obj.attributes.get('caption', None)
         self.colwidth = None
@@ -1609,7 +1633,6 @@ class RlWriter(object):
             return elements
         else:
             return [table]
-
 
     def _len(self, txt):
         in_tag = False
@@ -1652,18 +1675,18 @@ class RlWriter(object):
         return words
 
     def breakLongLines(self, txt, char_limit):
-       broken_source = []
-       for line in txt.split('\n'):
-           if len(line) < char_limit:
-               broken_source.append(line)
-           else:
-               words = self._getFrags(line)
-               while words:
-                   new_line = [words.pop(0)]
-                   while words and (self._len(''.join(new_line)) + self._len(words[0])) < char_limit:
-                       new_line.append(words.pop(0))
-                   broken_source.append(''.join(new_line))
-       return '\n'.join(broken_source)
+        broken_source = []
+        for line in txt.split('\n'):
+            if len(line) < char_limit:
+                broken_source.append(line)
+            else:
+                words = self._getFrags(line)
+                while words:
+                    new_line = [words.pop(0)]
+                    while words and (self._len(''.join(new_line)) + self._len(words[0])) < char_limit:
+                        new_line.append(words.pop(0))
+                    broken_source.append(''.join(new_line))
+        return '\n'.join(broken_source)
 
     def _writeSourceInSourceMode(self, n, src_lang, lexer, font_size, bgcolor=None, style=None):
         if bgcolor is None:
@@ -1682,7 +1705,7 @@ class RlWriter(object):
         source = ''.join(self.renderInline(n))
         self.formatter.source_mode -= 1
         source = source.replace('\t', ' '*pdfstyles.tabsize)
-        maxCharOnLine = max( [ len(line) for line in source.split("\n")])
+        maxCharOnLine = max([len(line) for line in source.split("\n")])
         char_limit = max(1, int(pdfstyles.source_max_line_len / (max(1, self.currentColCount))))
 
         if maxCharOnLine > char_limit:
@@ -1703,7 +1726,8 @@ class RlWriter(object):
             return None
 
     def writeSource(self, n):
-        langMap = {'lisp': lexers.CommonLispLexer()} #custom Mapping between mw-markup source attrs to pygement lexers if get_lexer_by_name fails
+        langMap = {'lisp': lexers.CommonLispLexer()}  # custom Mapping between mw-markup source attrs to pygement lexers if get_lexer_by_name fails
+
         def getLexer(name):
             try:
                 return lexers.get_lexer_by_name(name)
@@ -1753,7 +1777,7 @@ class RlWriter(object):
 
     def writeIndex(self, n):
         log.warning('unhandled Index Node - rendering child nodes')
-        return self.renderChildren(n) #fixme: handle index nodes properly
+        return self.renderChildren(n)  # fixme: handle index nodes properly
 
     def writeReference(self, n, isLink=False):
         ref_name = n.attributes.get('name')
@@ -1806,7 +1830,7 @@ class RlWriter(object):
     def writeSpan(self, n):
         return self.renderInline(n)
 
-    def writeFont(self, n): # FIXME we should evaluate the info in the fonttag
+    def writeFont(self, n):  # FIXME we should evaluate the info in the fonttag
         return self.renderInline(n)
 
     def writeStrike(self, n):
@@ -1821,11 +1845,10 @@ class RlWriter(object):
         else:
             return []
 
-    def writeTagNode(self,t):
+    def writeTagNode(self, t):
         if getattr(t, 'caption', None) in ['hiero']:
             return []
-        return self.renderChildren(t) # FIXME
-
+        return self.renderChildren(t)  # FIXME
 
     def writeItem(self, item, style='itemize', counterID=None, resetCounter=False):
         items = []
@@ -1834,40 +1857,40 @@ class RlWriter(object):
         else:
             seqReset = ''
 
-        if style=='itemize':
+        if style == 'itemize':
             itemPrefix = u'<bullet>%s</bullet>' % pdfstyles.list_item_style
         elif style == 'referencelist':
-            itemPrefix = '<bullet>%s[<seq id="liCounter%d" />]</bullet>' % (seqReset,counterID)
-        elif style== 'enumerate':
-            itemPrefix = '<bullet>%s<seq id="liCounter%d" />.</bullet>' % (seqReset,counterID)
+            itemPrefix = '<bullet>%s[<seq id="liCounter%d" />]</bullet>' % (seqReset, counterID)
+        elif style == 'enumerate':
+            itemPrefix = '<bullet>%s<seq id="liCounter%d" />.</bullet>' % (seqReset, counterID)
         elif style.startswith('enumerateLetter'):
-            itemPrefix = '<bullet>%s<seqformat id="liCounter%d" value="%s"/><seq id="liCounter%d" />.</bullet>' % (seqReset,counterID, style[-1], counterID)
+            itemPrefix = '<bullet>%s<seqformat id="liCounter%d" value="%s"/><seq id="liCounter%d" />.</bullet>' % (
+                seqReset, counterID, style[-1], counterID)
         else:
             log.warn('invalid list style:', repr(style))
             itemPrefix = ''
 
-        listIndent = max(0,(self.listIndentation + self.paraIndentLevel))
+        listIndent = max(0, (self.listIndentation + self.paraIndentLevel))
         if self.license_mode:
-            para_style = text_style(mode="licenselist",indent_lvl=listIndent)
+            para_style = text_style(mode="licenselist", indent_lvl=listIndent)
         elif self.ref_mode:
-            para_style = text_style(mode="references",indent_lvl=listIndent)
+            para_style = text_style(mode="references", indent_lvl=listIndent)
         else:
             para_style = text_style(mode='list', indent_lvl=listIndent, in_table=self.table_nesting)
-        if resetCounter: # first list item gets extra spaceBefore
+        if resetCounter:  # first list item gets extra spaceBefore
             para_style.spaceBefore = text_style().spaceBefore
 
-        leaf = item.getFirstLeaf() # strip leading spaces from list items
+        leaf = item.getFirstLeaf()  # strip leading spaces from list items
         if leaf and hasattr(leaf, 'caption'):
             leaf.caption = leaf.caption.lstrip()
-        items =  self.renderMixed(item, para_style=para_style, textPrefix=itemPrefix)
+        items = self.renderMixed(item, para_style=para_style, textPrefix=itemPrefix)
 
         return items
-
 
     def writeItemList(self, lst, numbered=False, style='itemize'):
         self.listIndentation += 1
         items = []
-        if not style=='referencelist':
+        if not style == 'referencelist':
             if numbered or lst.numbered:
                 list_style = lst.style.get('list-style-type')
                 list_type = lst.vlist.get('type')
@@ -1882,12 +1905,12 @@ class RlWriter(object):
                 else:
                     style = "enumerate"
             else:
-                style="itemize"
+                style = "itemize"
         self.listCounterID += 1
         counterID = self.listCounterID
-        for (i,node) in enumerate(lst):
-            if isinstance(node,parser.Item):
-                resetCounter = i==0 # we have to manually reset sequence counters. due to w/h calcs with wrap reportlab gets confused
+        for (i, node) in enumerate(lst):
+            if isinstance(node, parser.Item):
+                resetCounter = i == 0  # we have to manually reset sequence counters. due to w/h calcs with wrap reportlab gets confused
                 item = self.writeItem(node, style=style, counterID=counterID, resetCounter=resetCounter)
                 items.extend(item)
             else:
@@ -1917,7 +1940,7 @@ class RlWriter(object):
         for row in table.children[:]:
             if row.__class__ == advtree.Caption:
                 res = self.writeCaption(row)
-                table.removeChild(row) # this is slight a hack. we do this in order not to simplify cell-coloring code
+                table.removeChild(row)  # this is slight a hack. we do this in order not to simplify cell-coloring code
             elif row.__class__ != advtree.Row:
                 table.removeChild(row)
         return res
@@ -1929,13 +1952,13 @@ class RlWriter(object):
 
     def _extraCellPadding(self, cell):
         return cell.getChildNodesByClass(advtree.NamedURL) \
-               or cell.getChildNodesByClass(advtree.Reference) \
-               or cell.getChildNodesByClass(advtree.Sup)
+            or cell.getChildNodesByClass(advtree.Reference) \
+            or cell.getChildNodesByClass(advtree.Sup)
 
     def renderCell(self, cell):
         align = styleutils.getTextAlign(cell)
-        if not align and getattr(cell, 'is_header', False) \
-               or all([item.__class__ == advtree.ImageLink for item in cell.children]):
+        if (not align and getattr(cell, 'is_header', False)
+                or all([item.__class__ == advtree.ImageLink for item in cell.children])):
             align = 'center'
         elements = []
         if self._extraCellPadding(cell):
@@ -1955,8 +1978,7 @@ class RlWriter(object):
 
         return elements
 
-
-    def writeRow(self,row):
+    def writeRow(self, row):
         r = []
         for cell in row:
             if cell.__class__ == advtree.Cell:
@@ -1971,11 +1993,10 @@ class RlWriter(object):
             width_correction += element.style.leftIndent + element.style.rightIndent
         return width_correction
 
-
     def getMinElementSize(self, element):
         try:
             w_min, h_min = element.wrap(0, pdfstyles.page_height)
-        except TypeError: # issue with certain cjk text
+        except TypeError:  # issue with certain cjk text
             return 0, 0
         min_width = w_min + self._correctWidth(element)
         min_width += (2 * pdfstyles.cell_padding)
@@ -2002,13 +2023,12 @@ class RlWriter(object):
         total_width = max(total_width, current_width)
         return total_width - space_width
 
-
     def getMaxElementSize(self, element, w_min, h_min):
         if element.__class__ == Paragraph:
             element.wrap(pdfstyles.print_width, pdfstyles.print_height)
             pad = 2 * pdfstyles.cell_padding
             width = self.getMaxParaWidth(element, pdfstyles.print_width)
-            return  width + pad, 0
+            return width + pad, 0
         w_max, h_max = element.wrap(10*pdfstyles.page_width, pdfstyles.page_height)
         if h_max > 0:
             rows = h_min / h_max
@@ -2022,10 +2042,9 @@ class RlWriter(object):
         colwidth = sum(table.colwidths[col_idx:col_idx + cell.colspan])
         return colwidth
 
-
     def getCellSize(self, elements, cell):
         min_width = 0
-        max_width =0
+        max_width = 0
         for element in elements:
             if element.__class__ == DummyTable:
                 pad = 2 * pdfstyles.cell_padding
@@ -2050,7 +2069,7 @@ class RlWriter(object):
                     max_widths[col_idx] = max(max_width, max_widths[col_idx])
                 cell.col_idx = col_idx
 
-        for row in t.children: # handle colspanned cells
+        for row in t.children:  # handle colspanned cells
             col_idx = 0
             for cell in row.children:
                 if cell.colspan > 1:
@@ -2066,10 +2085,9 @@ class RlWriter(object):
     def getTableSize(self, t):
         t.min_widths, t.max_widths = self._getTableSize(t)
         table_width = sum(t.min_widths)
-        if (table_width > self.getAvailWidth() and self.table_nesting > 1) \
-                            or (table_width > (pdfstyles.page_width - \
-                            (pdfstyles.page_margin_left + pdfstyles.page_margin_right)/4) \
-                            and self.table_nesting == 1):
+        if ((table_width > self.getAvailWidth() and self.table_nesting > 1) or
+                (table_width > (pdfstyles.page_width - (pdfstyles.page_margin_left + pdfstyles.page_margin_right)/4)
+                    and self.table_nesting == 1)):
             pdfstyles.cell_padding = 2
             total_padding = t.num_cols * pdfstyles.cell_padding
             scale = (pdfstyles.print_width - total_padding) / (sum(t.min_widths) - total_padding)
@@ -2105,9 +2123,9 @@ class RlWriter(object):
             self.table_nesting -= 1
             return [DummyTable(t.min_widths, t.max_widths)]
         avail_width = self.getAvailWidth()
-        stretch=self.table_nesting == 1 and t.attributes.get('width', '') == u'100%'
+        stretch = self.table_nesting == 1 and t.attributes.get('width', '') == u'100%'
         t.colwidths = rltables.optimizeWidths(t.min_widths, t.max_widths, avail_width, stretch=stretch, table=t)
-        table_data =[]
+        table_data = []
         for row in t.children:
             row_data = []
             for col_idx, cell in enumerate(row.children):
@@ -2130,7 +2148,6 @@ class RlWriter(object):
             self.formatter.setRelativeFontSize(t.rel_font_size)
         return elements
 
-
     def addAnchors(self, table):
         anchors = ""
         for article_id in self.articleids:
@@ -2150,7 +2167,7 @@ class RlWriter(object):
             c.pop()
 
     def writeMath(self, node):
-        source = re.compile(u'\n+').sub(u'\n', node.caption.strip()) # remove multiple newlines, as this could break the mathRenderer
+        source = re.compile(u'\n+').sub(u'\n', node.caption.strip())  # remove multiple newlines, as this could break the mathRenderer
         if not len(source):
             return []
         if source.endswith('\\'):
@@ -2159,7 +2176,7 @@ class RlWriter(object):
         try:
             density = int(os.environ.get("MATH_RESOLUTION", "120"))
         except ValueError:
-            density = 120 # resolution in dpi in which math images are rendered by texvc
+            density = 120  # resolution in dpi in which math images are rendered by texvc
 
         imgpath = None
 
@@ -2186,18 +2203,18 @@ class RlWriter(object):
         img = PilImage.open(imgpath)
         if self.debug:
             log.info("math png at:", imgpath)
-        w,h = img.size
+        w, h = img.size
         del img
 
         if w > pdfstyles.max_math_width or h > pdfstyles.max_math_height:
             log.info('skipping math formula, png to big: %r, w:%d, h:%d' % (source, w, h))
             return ''
-        if self.table_nesting: # scale down math-formulas in tables
+        if self.table_nesting:  # scale down math-formulas in tables
             w = w * pdfstyles.small_font_size/pdfstyles.font_size
             h = h * pdfstyles.small_font_size/pdfstyles.font_size
 
         scale = (self.getAvailWidth())/(w/density*72)
-        if  scale < 1 :
+        if scale < 1:
             w *= scale
             h *= scale
 
@@ -2209,8 +2226,7 @@ class RlWriter(object):
             'path': imgpath.encode(sys.getfilesystemencoding()),
             'width': w/density*72,
             'height': h/density*72,
-            'valign': imgAlign, }
-                ]
+            'valign': imgAlign}]
 
     def writeTimeline(self, node):
         img_path = timeline.drawTimeline(node.timeline, self.tmpdir)
@@ -2218,7 +2234,7 @@ class RlWriter(object):
             # width and height should be parsed by the....parser and not guessed by the writer
             node.width = 180
             node.thumb = True
-            node.isInline = lambda : False
+            node.isInline = lambda: False
             w, h = self.image_utils.getImageSize(node, img_path)
             return [Figure(img_path, '', text_style(), imgWidth=w, imgHeight=h)]
         return []
@@ -2235,22 +2251,12 @@ class RlWriter(object):
             return [Figure(img_path, '', text_style(), imgWidth=w, imgHeight=h)]
         return []
 
-
     writeControl = ignore
     writeVar = writeEmphasized
 
 
-
-def writer(env, output,
-    status_callback=None,
-    coverimage=None,
-    strict=False,
-    debug=False,
-    mathcache=None,
-    lang=None,
-    profile=None,
-):
-
+def writer(env, output, status_callback=None, coverimage=None, strict=False, debug=False,
+           mathcache=None, lang=None, profile=None):
 
     r = RlWriter(env, strict=strict, debug=debug, mathcache=mathcache, lang=lang)
     if coverimage is None and env.configparser.has_section('pdf'):
@@ -2258,11 +2264,9 @@ def writer(env, output,
 
     if profile:
         import cProfile
-        cProfile.runctx('r.writeBook(output=output, coverimage=coverimage, status_callback=status_callback)',globals(), locals(), os.path.expanduser(profile))
+        cProfile.runctx('r.writeBook(output=output, coverimage=coverimage, status_callback=status_callback)', globals(), locals(), os.path.expanduser(profile))
     else:
         r.writeBook(output=output, coverimage=coverimage, status_callback=status_callback)
-
-
 
 
 writer.description = 'PDF documents (using ReportLab)'
@@ -2274,10 +2278,10 @@ writer.options = {
         'help': 'filename of an image for the cover page',
     },
     'strict': {
-        'help':'raise exception if errors occur',
+        'help': 'raise exception if errors occur',
     },
     'debug': {
-        'help':'debugging mode is more verbose',
+        'help': 'debugging mode is more verbose',
     },
     'mathcache': {
         'param': 'DIRNAME',

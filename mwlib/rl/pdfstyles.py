@@ -13,7 +13,6 @@
 #
 #################################################################
 
-
 import os
 
 from reportlab.lib.styles import ParagraphStyle
@@ -29,7 +28,7 @@ if '_' not in globals():
     _ = lambda x: x
 
 
-serif_font =  "FreeSerif"
+serif_font = "FreeSerif"
 sans_font = "FreeSans"
 mono_font = "FreeMono"
 default_font = 'FreeSerif'
@@ -49,10 +48,10 @@ page_margin_top = 2 * cm
 page_margin_bottom = 2 * cm
 
 header_margin_hor = 1.5 * cm
-header_margin_vert= 1.5 * cm
+header_margin_vert = 1.5 * cm
 
 footer_margin_hor = 1.5 * cm
-footer_margin_vert= 1.5 * cm
+footer_margin_vert = 1.5 * cm
 
 # margins for title page
 title_margin_left = page_margin_left
@@ -62,7 +61,7 @@ title_margin_bottom = page_margin_bottom
 
 show_title_page = True
 show_title_page_footer = True
-show_page_header = True 
+show_page_header = True
 show_page_footer = True
 page_break_after_article = False
 
@@ -80,8 +79,8 @@ pagefooter = u''
 
 #### TITLE PAGE
 
-title_page_image = '' # path of an image that is to be displayed on the title page
-title_page_image_size = (12*cm, 17*cm) # max. width, height of image, aspect ratio is kept
+title_page_image = ''  # path of an image that is to be displayed on the title page
+title_page_image_size = (12 * cm, 17 * cm)  # max. width, height of image, aspect ratio is kept
 # position of image relativ to bottom, left corner.
 # If component is set to None the image is centered
 # It is ensured that the image is not moved out of the page boundaries
@@ -102,9 +101,9 @@ render_toc = True
 
 ### TABLE CONFIG
 
-tableOverflowTolerance = 20  # max width overflow for tables    unit: pt 
+tableOverflowTolerance = 20  # max width overflow for tables    unit: pt
 cell_padding = 3
-min_rows_for_break = 3 # page breaks before tables are only forced if more than n rows are present
+min_rows_for_break = 3  # page breaks before tables are only forced if more than n rows are present
 
 # if set to True column widths are extracted from wiki markup if possible
 table_widths_from_markup = False
@@ -119,26 +118,26 @@ treecleaner_skip_methods = ['fixPreFormatted', 'removeEmptyReferenceLists']
 ######### IMAGE CONFIGURATION
 
 # margins for floated images - margins like in html/css: (top, right, bottom, left)
-img_margins_float_left = (0, 0.4*cm, 0.7*cm, 0) # img that is left aligned
-img_margins_float_right = (0, 0, 0.7*cm, 0.4*cm) # ...
-img_margins_float = (0.2*cm,0.2*cm,0.2*cm,0.2*cm) # any other alignment
+img_margins_float_left = (0, 0.4 * cm, 0.7 * cm, 0)  # img that is left aligned
+img_margins_float_right = (0, 0, 0.7 * cm, 0.4 * cm)  # ...
+img_margins_float = (0.2 * cm, 0.2 * cm, 0.2 * cm, 0.2 * cm)  # any other alignment
 
 img_default_thumb_width = 180
-img_max_thumb_width = 0.6 # fraction of print width for floated images
+img_max_thumb_width = 0.6  # fraction of print width for floated images
 img_max_thumb_height = 0.45
 img_min_res = 75
-img_inline_scale_factor = 0.7 # factor by which inline images are scaled.
-print_width_px = 540 # 540px are assumed to be the equivalent for a full print width
+img_inline_scale_factor = 0.7  # factor by which inline images are scaled.
+print_width_px = 540  # 540px are assumed to be the equivalent for a full print width
 
-img_border_color=(0.75, 0.75, 0.75)
+img_border_color = (0.75, 0.75, 0.75)
 
 link_images = True
 
 ######### TEXT CONFIGURATION
 font_size = 10
 leading = 15
-text_align = TA_JUSTIFY # default alignment of text outside of tables TA_LEFT, TA_JUSTIFY, TA_RIGHT, TA_CENTER are valid
-table_text_align = TA_LEFT # ... inside of tables
+text_align = TA_JUSTIFY  # default alignment of text outside of tables TA_LEFT, TA_JUSTIFY, TA_RIGHT, TA_CENTER are valid
+table_text_align = TA_LEFT  # ... inside of tables
 min_lines_after_heading = 5
 
 small_font_size = 8
@@ -147,27 +146,33 @@ small_leading = 12
 big_font_size = 12
 big_leading = 17
 
-para_left_indent = 25 # indentation of paragraphs...
-para_right_indent = 25 # indentation of paragraphs...
-list_left_indent = 12 # indentation of lists per level
+para_left_indent = 25  # indentation of paragraphs...
+para_right_indent = 25  # indentation of paragraphs...
+list_left_indent = 12  # indentation of lists per level
 
 tabsize = 6
 
-source_max_line_len = 72 # if printing a source node, the maximum number of chars in one line
+source_max_line_len = 72  # if printing a source node, the maximum number of chars in one line
 
 no_float_math_len = 150
 
 max_math_width = 2500
 max_math_height = 2500
 #set to CJK if a PDF is rendered mainly using chinese, japanese or korean glyphs
-word_wrap=None
+word_wrap = None
 
 min_preformatted_size = 5
 
+# chapters like:
+# ------------------ <= chapter_rule_before
+#     Chapter
+# ------------------ <= chapter_rule_after
+chapter_rule_before = True
+chapter_rule_after = True
+chapter_rule_before_color = colors.black
+chapter_rule_after_color = colors.black
 
-chapter_rule_color = colors.black
 # misc options
-
 list_item_style = u'\u2022'
 
 url_blacklist = ['http://toolserver.org']
@@ -182,6 +187,9 @@ source_line_numbers = False
 # default,autumn,orland,bw,colorful,default,emacs,friendly,fruity,manni,monokai,murphy,native,pastie,perldoc,rrt,tango,trac,vim,vs
 source_bgcolor = '#eeeeee'
 source_style = 'default'
+
+# urls inline
+show_url_like_web = False
 
 
 class BaseStyle(ParagraphStyle):
@@ -205,7 +213,8 @@ class BaseStyle(ParagraphStyle):
         self.backColor = None
         self.wordWrap = None
         self.textTransform = None
-        
+
+
 def text_style(mode='p', indent_lvl=0, in_table=0, relsize='normal', text_align=None):
     """
     mode: p (normal paragraph), blockquote, center (centered paragraph), footer, figure (figure caption text),
@@ -221,7 +230,7 @@ def text_style(mode='p', indent_lvl=0, in_table=0, relsize='normal', text_align=
         text_align = 'left'
 
     style = BaseStyle(name='text_style_%s_indent_%d_table_%d_size_%s' % (mode, indent_lvl, in_table, relsize))
-    style.flowable = True # needed for "flowing" paragraphs around figures
+    style.flowable = True  # needed for "flowing" paragraphs around figures
 
     if word_wrap in ['CJK', 'RTL'] and mode not in ['preformatted', 'source']:
         style.wordWrap = word_wrap
@@ -233,8 +242,8 @@ def text_style(mode='p', indent_lvl=0, in_table=0, relsize='normal', text_align=
     elif text_align == 'center':
         style.alignment = TA_CENTER
 
-    if in_table or mode in ['footer', 'figure'] or (mode=='preformatted' and relsize=='small'):
-        style.fontSize=small_font_size
+    if in_table or mode in ['footer', 'figure'] or (mode == 'preformatted' and relsize == 'small'):
+        style.fontSize = small_font_size
         style.bulletFontSize = small_font_size
         style.leading = small_leading
         if relsize == 'small':
@@ -259,22 +268,22 @@ def text_style(mode='p', indent_lvl=0, in_table=0, relsize='normal', text_align=
 
     if mode == 'img_attribution':
         style.spaceBefore = 2
-        
+
     if mode in ['articlefoot', 'references']:
-        style.fontSize=small_font_size
-        style.leading=small_leading
+        style.fontSize = small_font_size
+        style.leading = small_leading
         style.bulletFontSize = small_font_size
 
     if mode == 'box' or mode == 'source' or mode == 'preformatted':
         style.backColor = '#eeeeee'
-        style.borderPadding = 3 # borderPadding is not calculated onto the box dimensions.
-        style.spaceBefore = 6 # therefore spaceBefore = 3 + borderPadding
-        style.spaceAfter = 9 # add an extra 3 to spaceAfter, b/c spacing seems to small otherwise
-    
+        style.borderPadding = 3  # borderPadding is not calculated onto the box dimensions.
+        style.spaceBefore = 6  # therefore spaceBefore = 3 + borderPadding
+        style.spaceAfter = 9  # add an extra 3 to spaceAfter, b/c spacing seems to small otherwise
+
     if mode == 'source' or mode == 'preformatted':
-        style.fontName = mono_font   
+        style.fontName = mono_font
         style.flowable = False
-        
+
     if mode == 'list' or mode == 'references':
         style.spaceBefore = 0
         style.bulletIndent = list_left_indent * max(0, indent_lvl-1)
@@ -286,13 +295,13 @@ def text_style(mode='p', indent_lvl=0, in_table=0, relsize='normal', text_align=
         style.fontSize = 36
         style.leading = 40
         style.spaceBefore = 16
-        style.fontName= sans_font
+        style.fontName = sans_font
         style.alignment = TA_LEFT
-        
+
     if mode == 'booksubtitle':
         style.fontSize = 24
         style.leading = 30
-        style.fontName= sans_font
+        style.fontName = sans_font
         style.alignment = TA_LEFT
 
     if word_wrap == 'RTL':
@@ -320,11 +329,11 @@ def text_style(mode='p', indent_lvl=0, in_table=0, relsize='normal', text_align=
     if mode == 'toc_group':
         style.fontSize = 18
         style.leading = 22
-       
+
     if mode == 'toc_chapter':
         style.fontSize = 14
         style.leading = 18
-        
+
     if mode == 'toc_article':
         style.fontSize = 10
         style.leading = 12
@@ -347,7 +356,7 @@ class BaseHeadingStyle(ParagraphStyle):
         self.leftIndent = 0
         self.rightIndent = 0
         self.firstLineIndent = 0
-        self.alignment = TA_LEFT        
+        self.alignment = TA_LEFT
         self.spaceBefore = 12
         self.spaceAfter = 6
         self.bulletFontName = serif_font
@@ -359,7 +368,8 @@ class BaseHeadingStyle(ParagraphStyle):
         self.textTransform = None
         #self.allowWidows = 0
         #self.allowOrphans = 0
-        
+
+
 def heading_style(mode='chapter', lvl=1, text_align=None):
 
     style = BaseHeadingStyle(name='heading_style_%s_%d' % (mode, lvl))
@@ -379,11 +389,11 @@ def heading_style(mode='chapter', lvl=1, text_align=None):
         style.spaceBefore = 20
         style.spaceAfter = 2
     elif mode == 'section':
-        lvl = max(min(5,lvl), 1)  
+        lvl = max(min(5, lvl), 1)
         style.fontSize = 18 - (lvl - 1) * 2
-        style.leading = style.fontSize + max(2, min(int(style.fontSize / 5), 3)) # magic: increase in leading is between 2 and 3 depending on fontsize...
+        style.leading = style.fontSize + max(2, min(int(style.fontSize / 5), 3))  # magic: increase in leading is between 2 and 3 depending on fontsize...
         style.spaceBefore = min(style.leading, 20)
-        if lvl > 1: # needed for "flowing" paragraphs around figures
+        if lvl > 1:  # needed for "flowing" paragraphs around figures
             style.flowable = True
     elif mode == 'tablecaption':
         style.fontSize = 12
@@ -405,10 +415,10 @@ def heading_style(mode='chapter', lvl=1, text_align=None):
         style.alignment = TA_RIGHT
     elif text_align == 'justify':
         style.alignment = TA_JUSTIFY
-    
+
     style.prevent_post_pagebreak = True
     return style
-    
+
 
 # import custom configuration to override configuration values
 # if doing so, you need to be careful not to break things...
@@ -421,7 +431,7 @@ except ImportError:
 print_width = page_width - page_margin_left - page_margin_right
 print_height = page_height - page_margin_top - page_margin_bottom
 
-article_start_min_space = 0.5*print_height # if less space is available on the current page a page break is inserted
-article_start_min_space_infobox = 0.9*print_height # as above. but if the article starts with an infobox the required space should be higher
+article_start_min_space = 0.5 * print_height  # if less space is available on the current page a page break is inserted
+article_start_min_space_infobox = 0.9 * print_height  # as above. but if the article starts with an infobox the required space should be higher
 
-min_table_space = print_height / 4 # if less space is available, a page break will be inserted before the table
+min_table_space = print_height / 4  # if less space is available, a page break will be inserted before the table

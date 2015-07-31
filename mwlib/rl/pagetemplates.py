@@ -21,7 +21,7 @@ from mwlib.rl.pdfstyles import pagefooter, titlepagefooter, serif_font
 from mwlib.rl import pdfstyles
 from mwlib.rl.customflowables import TocEntry
 
-from reportlab.lib.pagesizes import  A3
+from reportlab.lib.pagesizes import A3
 
 from mwlib.rl.pdfstyles import text_style
 
@@ -34,9 +34,11 @@ font_switcher.registerFontDefinitionList(fontconfig.fonts)
 
 formatter = RLFormatter(font_switcher=font_switcher)
 
+
 def _doNothing(canvas, doc):
     "Dummy callback for onPage"
     pass
+
 
 class SimplePage(PageTemplate):
     def __init__(self, pageSize=A3):
@@ -47,6 +49,7 @@ class SimplePage(PageTemplate):
         frames = Frame(page_margin_left, page_margin_bottom, pw-page_margin_left-page_margin_right, ph-page_margin_top-page_margin_bottom)
 
         PageTemplate.__init__(self, id=id, frames=frames, pagesize=pageSize)
+
 
 class WikiPage(PageTemplate):
 
@@ -63,18 +66,18 @@ class WikiPage(PageTemplate):
         """
 
         id = title.encode('utf-8')
-        frames = Frame(page_margin_left,page_margin_bottom, print_width, print_height)
+        frames = Frame(page_margin_left, page_margin_bottom, print_width, print_height)
 
-        PageTemplate.__init__(self,id=id, frames=frames,onPage=onPage,onPageEnd=onPageEnd,pagesize=pagesize)
+        PageTemplate.__init__(self, id=id, frames=frames, onPage=onPage, onPageEnd=onPageEnd, pagesize=pagesize)
 
         self.title = title
         self.rtl = rtl
 
-    def beforeDrawPage(self,canvas,doc):
-        canvas.setFont(serif_font,10)
+    def beforeDrawPage(self, canvas, doc):
+        canvas.setFont(serif_font, 10)
         canvas.setLineWidth(0)
-        #header
-        canvas.line(header_margin_hor, page_height - header_margin_vert, page_width - header_margin_hor, page_height - header_margin_vert )
+        # header
+        canvas.line(header_margin_hor, page_height - header_margin_vert, page_width - header_margin_hor, page_height - header_margin_vert)
         if pdfstyles.show_page_header:
             canvas.saveState()
             canvas.resetTransforms()
@@ -85,12 +88,12 @@ class WikiPage(PageTemplate):
             canvas.translate(h_offset, page_height - header_margin_vert - 0.1*cm)
             p = Paragraph(self.title, text_style())
             p.canv = canvas
-            p.wrap(page_width - header_margin_hor*2.5, page_height) # add an extra 0.5 margin to have enough space for page number
+            p.wrap(page_width - header_margin_hor * 2.5, page_height)  # add an extra 0.5 margin to have enough space for page number
             p.drawPara()
             canvas.restoreState()
 
         if not self.rtl:
-            h_pos =  page_width - header_margin_hor
+            h_pos = page_width - header_margin_hor
             d = canvas.drawRightString
         else:
             h_pos = header_margin_hor
@@ -99,21 +102,19 @@ class WikiPage(PageTemplate):
 
         #Footer
         canvas.saveState()
-        canvas.setFont(serif_font,8)
-        canvas.line(footer_margin_hor, footer_margin_vert, page_width - footer_margin_hor, footer_margin_vert )
+        canvas.setFont(serif_font, 8)
+        canvas.line(footer_margin_hor, footer_margin_vert, page_width - footer_margin_hor, footer_margin_vert)
         if pdfstyles.show_page_footer:
             p = Paragraph(formatter.cleanText(pagefooter, escape=False), text_style())
             p.canv = canvas
-            w,h = p.wrap(page_width - header_margin_hor*2.5, page_height)
+            w, h = p.wrap(page_width - header_margin_hor*2.5, page_height)
             p.drawOn(canvas, footer_margin_hor, footer_margin_vert - 10 - h)
         canvas.restoreState()
 
 
-
 class TitlePage(PageTemplate):
 
-    def __init__(self, cover=None, id=None,
-        onPage=_doNothing, onPageEnd=_doNothing, pagesize=(page_width, page_height)):
+    def __init__(self, cover=None, id=None, onPage=_doNothing, onPageEnd=_doNothing, pagesize=(page_width, page_height)):
 
         id = 'TitlePage'
         p = pdfstyles
@@ -122,13 +123,13 @@ class TitlePage(PageTemplate):
                        p.page_width-p.title_margin_left-p.title_margin_right,
                        p.page_height-p.title_margin_top-p.title_margin_bottom)
 
-        PageTemplate.__init__(self,id=id, frames=frames,onPage=onPage,onPageEnd=onPageEnd,pagesize=pagesize)
+        PageTemplate.__init__(self, id=id, frames=frames, onPage=onPage, onPageEnd=onPageEnd, pagesize=pagesize)
         self.cover = cover
 
     def _scale_img(self, img_area_size, img_fn):
         img = Image.open(self.cover)
         img_width, img_height = img.size
-        img_area_width = min(page_width,img_area_size[0])
+        img_area_width = min(page_width, img_area_size[0])
         img_area_height = min(page_height, img_area_size[1])
         img_ar = img_width/img_height
         img_area_ar = img_area_width/img_area_height
@@ -137,11 +138,11 @@ class TitlePage(PageTemplate):
         else:
             return (img_area_height*img_ar, img_area_height)
 
-    def beforeDrawPage(self,canvas,doc):
-        canvas.setFont(serif_font,8)
+    def beforeDrawPage(self, canvas, doc):
+        canvas.setFont(serif_font, 8)
         canvas.saveState()
         if pdfstyles.show_title_page_footer:
-            canvas.line(footer_margin_hor, footer_margin_vert, page_width - footer_margin_hor, footer_margin_vert )
+            canvas.line(footer_margin_hor, footer_margin_vert, page_width - footer_margin_hor, footer_margin_vert)
             footertext = [_(titlepagefooter)]
             if pdfstyles.show_creation_date:
                 locale.setlocale(locale.LC_ALL, '')
@@ -152,25 +153,26 @@ class TitlePage(PageTemplate):
             txt = '<br/>'.join(line if isinstance(line, unicode) else unicode(line, 'utf-8')
                                for line in lines)
             p = Paragraph(txt, text_style(mode='footer'))
-            w,h = p.wrap(print_width, print_height)
-            canvas.translate( (page_width-w)/2.0, footer_margin_vert - h - 0.25*cm)
+            w, h = p.wrap(print_width, print_height)
+            canvas.translate((page_width-w) / 2.0, footer_margin_vert - h - 0.25 * cm)
             p.canv = canvas
             p.draw()
         canvas.restoreState()
         if self.cover:
             width, height = self._scale_img(pdfstyles.title_page_image_size, self.cover)
-            if pdfstyles.title_page_image_pos[0] == None:
+            if pdfstyles.title_page_image_pos[0] is None:
                 x = (page_width - width) / 2.0
             else:
                 x = max(0, min(page_width-width, pdfstyles.title_page_image_pos[0]))
-            if pdfstyles.title_page_image_pos[1] == None:
+            if pdfstyles.title_page_image_pos[1] is None:
                 y = (page_height - height) / 2.0
             else:
                 y = max(0, min(page_height-height, pdfstyles.title_page_image_pos[1]))
-            canvas.drawImage(self.cover, x, y, width , height)
+            canvas.drawImage(self.cover, x, y, width, height)
 
 from reportlab.platypus.doctemplate import BaseDocTemplate
 from reportlab.pdfgen import canvas
+
 
 class PPDocTemplate(BaseDocTemplate):
 
@@ -182,7 +184,7 @@ class PPDocTemplate(BaseDocTemplate):
             self.progress = 0
             self.setProgressCallBack(self.progressCB)
             self.status_callback = status_callback
-        self.tocCallback=tocCallback
+        self.tocCallback = tocCallback
         self.title = kwargs['title']
 
     def progressCB(self, typ, value):
@@ -207,12 +209,12 @@ class PPDocTemplate(BaseDocTemplate):
                     'heading4': 4,
                     }
         got_chapter = False
-        last_lvl =  0
+        last_lvl = 0
         for (bm_id, (bm_title, bm_type)) in enumerate(self.bookmarks):
             lvl = type2lvl[bm_type]
-            if bm_type== 'chapter':
+            if bm_type == 'chapter':
                 got_chapter = True
-            elif not got_chapter: # outline-lvls can't start above zero
+            elif not got_chapter:  # outline-lvls can't start above zero
                 lvl -= 1
             lvl = min(lvl, last_lvl + 1)
             last_lvl = lvl
@@ -227,4 +229,3 @@ class PPDocTemplate(BaseDocTemplate):
             return
         if flowable.__class__ == TocEntry:
             self.tocCallback((flowable.lvl, flowable.txt, self.page))
-
