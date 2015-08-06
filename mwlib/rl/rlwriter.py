@@ -1064,7 +1064,7 @@ class RlWriter(object):
         # fontawesome icons
         txt = font_awesome.renderFontawesomeIcon(node)
         if txt:
-            return txt
+            return [txt]
 
         txt = []
         self.inline_mode += 1
@@ -1078,10 +1078,22 @@ class RlWriter(object):
         self.inline_mode -= 1
 
         text_color = styleutils.rgbColorFromNode(node)
+
+        # background_color = styleutils.rgbBgColorFromNode(node)
+        # # span: color=colorname backcolor=colorname size=float style=stylename
+        # if background_color:
+        #     print(node)
+        #     hex_col = ''.join('%02x' % int(c*255) for c in background_color)
+        #     txt.insert(0, '<span backcolor="#%s" size="0.9">' % hex_col)
+        #     txt.append('</span>')
+        #     print(txt)
+        #     return txt
+
         if text_color:
             hex_col = ''.join('%02x' % int(c*255) for c in text_color)
             txt.insert(0, '<font color="#%s">' % hex_col)
             txt.append('</font>')
+
         return txt
 
     def renderMixed(self, node, para_style=None, textPrefix=None):
@@ -1118,6 +1130,43 @@ class RlWriter(object):
                              'center': TA_CENTER,
                              'justify': TA_JUSTIFY}
                 para_style.alignment = align_map[align]
+
+            border = node.style.get('border', '').split()
+            # border: 1px solid #000000
+            if len(border) == 3:
+                border_width, border_color = border[0], border[2]
+                if border_width.endswith('px'):
+                    border_width = border_width[:-2]
+
+                para_style.borderWidth = int(border_width)
+                para_style.borderColor = border_color
+
+            border_radius = node.style.get('border-radius', None)
+            if border and border_radius:
+                if border_radius.endswith('px'):
+                    border_radius = border_radius[:-2]
+
+                para_style.borderRadius = int(border_radius)
+
+            padding = node.style.get('padding', '').split()
+            if padding:
+                border_padding = padding[0]
+                if border_padding.endswith('px'):
+                    border_padding = border_padding[:-2]
+
+                para_style.borderPadding = int(border_padding)
+
+            margin_left = node.style.get('margin-left', '')
+            if margin_left:
+                if margin_left.endswith('px'):
+                    margin_left = margin_left[:-2]
+                para_style.leftIndent = int(margin_left)
+
+            margin_right = node.style.get('margin-right', '')
+            if margin_right:
+                if margin_right.endswith('px'):
+                    margin_right = margin_right[:-2]
+                para_style.rightIndent = int(margin_right)
 
         txt_style = None
         if node.__class__ == advtree.Cell and getattr(node, 'is_header', False):
@@ -1262,8 +1311,8 @@ class RlWriter(object):
 
     def _quote_url(self, url):
         # to quote links with language specific chars
-        PROTO_DELIM = '://'
-        proto, url_txt = url.split(PROTO_DELIM)
+        PROTO_DELIM = ':'
+        proto, url_txt = url.split(PROTO_DELIM, 1)
         return '%s%s%s' % (proto, PROTO_DELIM, urllib.quote(url_txt.encode('utf-8'), safe='/?&=#+:'))
 
     def renderURL(self, url):

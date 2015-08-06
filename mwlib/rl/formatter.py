@@ -21,7 +21,7 @@ class RLFormatter(Formatter):
                 ('big_style', '<font size="%s">' % pdfstyles.big_font_size, '</font>', None),
                 ('sub_style', '<sub>', '</sub>', None),
                 ('sup_style', '<sup>','</sup>', None),
-                ('teletype_style', '<font fontName="%s">' % pdfstyles.mono_font, '</font>', None),
+                ('teletype_style', '<font fontName="%s" bgcolor="%s">' % (pdfstyles.mono_font, pdfstyles.teletype_bgcolor), '</font>', None),
                 ('strike_style', '<strike>', '</strike>', None),
                 ('underline_style', '<u>', '</u>', None),
                 ('overline_style', '', '', None),

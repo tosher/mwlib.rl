@@ -191,6 +191,7 @@ source_style = 'default'
 # urls inline
 show_url_like_web = False
 
+teletype_bgcolor = '#E8E8E8'
 
 class BaseStyle(ParagraphStyle):
 
