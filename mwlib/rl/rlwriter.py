@@ -1737,6 +1737,39 @@ class RlWriter(object):
                     broken_source.append(''.join(new_line))
         return '\n'.join(broken_source)
 
+    def breakLongLinesSource(self, txt, char_limit):
+        broken_source = []
+        for line in txt.split('\n'):
+            spaces_cnt = 0
+            tabs_cnt = 0
+            if len(line) < char_limit:
+                broken_source.append(line)
+            else:
+                if line.startswith((' ', '\t')):
+                    # count spaces and tabs in start of line
+                    for ch in line:
+                        if ch == ' ':
+                            spaces_cnt += 1
+                        elif ch == '\t':
+                            tabs_cnt += 1
+                        else:
+                            break
+
+                indent_line = '%s%s' % (' ' * spaces_cnt, '\t' * tabs_cnt)
+                indent_len = spaces_cnt + tabs_cnt * pdfstyles.tabsize
+
+                line = line.lstrip()
+                while line:
+                    new_line = ''.join(line)
+                    if len(new_line) > char_limit - indent_len:
+                        new_line = line[:char_limit - indent_len]
+                        line = line[char_limit - indent_len:]
+                    else:
+                        line = ''
+                    new_line = '%s%s' % (indent_line, new_line)
+                    broken_source.append(new_line)
+        return '\n'.join(broken_source)
+
     def _writeSourceInSourceMode(self, n, src_lang, lexer, font_size, bgcolor=None, style=None):
         if bgcolor is None:
             bgcolor = pdfstyles.source_bgcolor
@@ -1758,7 +1791,7 @@ class RlWriter(object):
         char_limit = max(1, int(pdfstyles.source_max_line_len / (max(1, self.currentColCount))))
 
         if maxCharOnLine > char_limit:
-            source = self.breakLongLines(source, char_limit)
+            source = self.breakLongLinesSource(source, char_limit)
         txt = ''
         try:
             txt = unicode(highlight(source, lexer, sourceFormatter), 'utf-8')
@@ -1778,6 +1811,10 @@ class RlWriter(object):
         langMap = {'lisp': lexers.CommonLispLexer()}  # custom Mapping between mw-markup source attrs to pygement lexers if get_lexer_by_name fails
 
         def getLexer(name):
+            # fix for source highlighter (html4strict, html5) => html
+            if name and name.startswith('html'):
+                name = 'html'
+
             try:
                 return lexers.get_lexer_by_name(name)
             except lexers.ClassNotFound:
