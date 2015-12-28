@@ -125,14 +125,23 @@ def buildPara(txtList, style=text_style(), txt_style=None):
             'start': ''.join(txt_style['start']),
             'end': ''.join(txt_style['end']),
             'txt': _txt}
-    if len(_txt) > 0:
-        try:
-            return [Paragraph(_txt, style)]
-        except:
-            traceback.print_exc()
-            log.warning('reportlab paragraph error:', repr(_txt))
-            return []
-    else:
+    # if len(_txt) > 0:
+    #     try:
+    #         return [Paragraph(_txt, style)]
+    #     except:
+    #         traceback.print_exc()
+    #         log.warning('reportlab paragraph error:', repr(_txt))
+    #         return []
+    # else:
+    #     return []
+
+    # empty paragraphs already cleared in treecleaner
+    # remove checking for possibility to save protected elements
+    try:
+        return [Paragraph(_txt, style)]
+    except:
+        traceback.print_exc()
+        log.warning('reportlab paragraph error:', repr(_txt))
         return []
 
 
@@ -392,6 +401,7 @@ class RlWriter(object):
             ns = 0
         art.ns = ns
         art.url = mywiki.getURL(item.title, item.revision) or None
+
         if item.displaytitle is not None:
             art.caption = item.displaytitle
         source = mywiki.getSource(item.title, item.revision)
@@ -408,8 +418,9 @@ class RlWriter(object):
         self.tc.cleanAll()
         self.cnt.transformCSS(art)
         if self.debug:
-            #parser.show(sys.stdout, art)
-            print "\n".join([repr(r) for r in self.tc.getReports()])
+            parser.show(sys.stdout, art)
+            # print "\n".join([repr(r) for r in self.tc.getReports()])
+
         return art
 
     def initReportlabDoc(self, output):
@@ -795,6 +806,13 @@ class RlWriter(object):
             return []
         self.references = []
         title = self.renderArticleTitle(article.caption)
+        # small hack: Possib no print title on special pages, based on "noprint" class
+        # in book collection we can specify page as [[Page anme|<span class="noprint">Page name<span>]]
+        # printable title will be empty
+        # caption for bookmarks will be wo html tags: "Page name"
+        if not title:
+            caption_node = uparser.parseString(title='', raw=article.caption, expandTemplates=False)
+            article.caption = caption_node.getAllDisplayText()
 
         log.info('rendering: %r' % (article.url or article.caption))
         if self.layout_status:
@@ -821,7 +839,7 @@ class RlWriter(object):
         else:
             heading_anchor = ''
 
-        #add anchor for internal links
+        # add anchor for internal links
         url = getattr(article, 'url', None)
         if url:
             article_id = self.buildArticleID(article.wikiurl, article.caption)
@@ -1538,11 +1556,16 @@ class RlWriter(object):
             cell = img_node.getParentNodesByClass(advtree.Cell)
             if cell:
                 max_width = print_width / len(cell[0].getAllSiblings()) - 10
+        # tosher: possibility to fix max image size, when custom sizes was set
         max_height = pdfstyles.img_max_thumb_height * pdfstyles.print_height
-        if self.table_nesting > 0:
-            max_height = print_height/4  # fixme this needs to be read from config
-        if self.gallery_mode:
-            max_height = print_height/3  # same as above
+        if img_node.width and img_node.height:
+            max_width = img_node.width
+            max_height = img_node.height
+        else:
+            if self.table_nesting > 0:
+                max_height = print_height/4  # fixme this needs to be read from config
+            if self.gallery_mode:
+                max_height = print_height/3  # same as above
 
         self.set_svg_default_size(img_node)
 
@@ -1737,6 +1760,39 @@ class RlWriter(object):
                     broken_source.append(''.join(new_line))
         return '\n'.join(broken_source)
 
+    def breakLongLinesSource(self, txt, char_limit):
+        broken_source = []
+        for line in txt.split('\n'):
+            spaces_cnt = 0
+            tabs_cnt = 0
+            if len(line) < char_limit:
+                broken_source.append(line)
+            else:
+                if line.startswith((' ', '\t')):
+                    # count spaces and tabs in start of line
+                    for ch in line:
+                        if ch == ' ':
+                            spaces_cnt += 1
+                        elif ch == '\t':
+                            tabs_cnt += 1
+                        else:
+                            break
+
+                indent_line = '%s%s' % (' ' * spaces_cnt, '\t' * tabs_cnt)
+                indent_len = spaces_cnt + tabs_cnt * 4
+
+                line = line.lstrip()
+                while line:
+                    new_line = ''.join(line)
+                    if len(new_line) > char_limit - indent_len:
+                        new_line = line[:char_limit - indent_len]
+                        line = line[char_limit - indent_len:]
+                    else:
+                        line = ''
+                    new_line = '%s%s' % (indent_line, new_line)
+                    broken_source.append(new_line)
+        return '\n'.join(broken_source)
+
     def _writeSourceInSourceMode(self, n, src_lang, lexer, font_size, bgcolor=None, style=None):
         if bgcolor is None:
             bgcolor = pdfstyles.source_bgcolor
@@ -1758,7 +1814,7 @@ class RlWriter(object):
         char_limit = max(1, int(pdfstyles.source_max_line_len / (max(1, self.currentColCount))))
 
         if maxCharOnLine > char_limit:
-            source = self.breakLongLines(source, char_limit)
+            source = self.breakLongLinesSource(source, char_limit)
         txt = ''
         try:
             txt = unicode(highlight(source, lexer, sourceFormatter), 'utf-8')
@@ -1778,6 +1834,10 @@ class RlWriter(object):
         langMap = {'lisp': lexers.CommonLispLexer()}  # custom Mapping between mw-markup source attrs to pygement lexers if get_lexer_by_name fails
 
         def getLexer(name):
+            # fix for source highlighter (html4strict, html5) => html
+            if name and name.startswith('html'):
+                name = 'html'
+
             try:
                 return lexers.get_lexer_by_name(name)
             except lexers.ClassNotFound:
