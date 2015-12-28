@@ -1779,7 +1779,7 @@ class RlWriter(object):
                             break
 
                 indent_line = '%s%s' % (' ' * spaces_cnt, '\t' * tabs_cnt)
-                indent_len = spaces_cnt + tabs_cnt * 4
+                indent_len = spaces_cnt + tabs_cnt * pdfstyles.tabsize
 
                 line = line.lstrip()
                 while line:
