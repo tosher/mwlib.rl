@@ -98,6 +98,7 @@ creation_date_txt = 'PDF generated at: %s'
 # if enabled a table of contents is printed at the beginning of the pdf
 # note that no TOC is generated if only one article is rendered
 render_toc = True
+toc_show_articles_group_name = True
 
 ### TABLE CONFIG
 
@@ -339,6 +340,21 @@ def text_style(mode='p', indent_lvl=0, in_table=0, relsize='normal', text_align=
         style.fontSize = 10
         style.leading = 12
         style.leftIndent = para_left_indent
+
+    if mode == 'toc_heading2':
+        style.fontSize = 10
+        style.leading = 12
+        style.leftIndent = para_left_indent * 2
+
+    if mode == 'toc_heading3':
+        style.fontSize = 10
+        style.leading = 12
+        style.leftIndent = para_left_indent * 3
+
+    if mode == 'toc_heading4':
+        style.fontSize = 10
+        style.leading = 12
+        style.leftIndent = para_left_indent * 4
 
     return style
 

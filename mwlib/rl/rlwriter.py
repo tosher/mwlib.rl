@@ -467,6 +467,7 @@ class RlWriter(object):
         return Paragraph(' ', text_style())
 
     def writeBook(self, output, coverimage=None, status_callback=None):
+
         self.numarticles = len(self.env.metabook.articles())
         self.articlecount = 0
         self.getArticleIDs()
@@ -489,13 +490,13 @@ class RlWriter(object):
             elements.append(self.addDummyPage())
         got_chapter = False
         item_list = self.env.metabook.walk()
-        if not self.fail_safe_rendering:
+        if not self.fail_safe_rendering and pdfstyles.toc_show_articles_group_name:
             elements.append(TocEntry(txt=_('Articles'), lvl='group'))
         for (i, item) in enumerate(item_list):
             if item.type == 'chapter':
                 chapter = parser.Chapter(item.title.strip())
-                if len(item_list) > i+1 and item_list[i+1].type == 'article':
-                    chapter.next_article_title = item_list[i+1].title
+                if len(item_list) > i + 1 and item_list[i + 1].type == 'article':
+                    chapter.next_article_title = item_list[i + 1].title
                 else:
                     chapter.next_article_title = ''
                 elements.extend(self.writeChapter(chapter))
@@ -536,6 +537,7 @@ class RlWriter(object):
                 self.writeBook(output, coverimage=coverimage, status_callback=status_callback)
 
     def renderBook(self, elements, output, coverimage=None):
+
         if pdfstyles.show_article_attribution:
             elements.append(TocEntry(txt=_('References'), lvl='group'))
             elements.append(self._getPageTemplate(_('Article Sources and Contributors')))
@@ -562,7 +564,9 @@ class RlWriter(object):
             gc.collect()
             if linuxmem:
                 log.info('memory usage after laying out:', linuxmem.memory())
+
             self.doc.build(elements)
+
             if pdfstyles.render_toc and self.numarticles > 1:
                 err = self.toc_renderer.build(output, self.toc_entries, has_title_page=bool(self.book.title), rtl=self.rtl)
                 if err:
@@ -700,6 +704,9 @@ class RlWriter(object):
         else:
             anchor = ''
         elements = [Paragraph('<font name="%s"><b>%s</b></font>%s' % (headingStyle.fontName, heading_txt, anchor), headingStyle)]
+        # tosher: article headings into TOC
+        if 2 <= lvl <= 4:
+            elements.append(TocEntry(txt=heading_txt, lvl='heading%s' % lvl))
 
         if self.table_size_calc == 0:
             obj.removeChild(obj.children[0])
@@ -849,7 +856,7 @@ class RlWriter(object):
 
         heading_para = Paragraph('<b>%s</b>%s' % (title, heading_anchor), heading_style("article"))
         elements.append(heading_para)
-        elements.append(TocEntry(txt=title, lvl='article'))
+        elements.append(TocEntry(txt=title or article.caption, lvl='article'))
 
         if pdfstyles.show_article_hr:
             elements.append(HRFlowable(width='100%', hAlign='LEFT', thickness=1, spaceBefore=0, spaceAfter=10, color=colors.black))
@@ -882,7 +889,7 @@ class RlWriter(object):
             if not self.numarticles:
                 self.layout_status(progress=100)
             else:
-                self.layout_status(progress=100*self.articlecount/self.numarticles)
+                self.layout_status(progress=100 * self.articlecount / self.numarticles)
 
         self.reference_list_rendered = False
         return elements
