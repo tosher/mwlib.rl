@@ -225,6 +225,7 @@ class PPDocTemplate(BaseDocTemplate):
         the text of H1, H2 and H3 elements. We broadcast a
         notification to the DocTemplate, which should inform
         the TOC and let it pull them out."""
+
         if not self.tocCallback:
             return
         if flowable.__class__ == TocEntry:
